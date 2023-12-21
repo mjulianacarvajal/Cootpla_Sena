@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block Contenido %}
+
+<div class="content-wrapper" style="min-height: 1604.44px; margin-left:0;">
+
+    <section class="content-header">
+
+    </section>
+
+    <section class="content">
+        <div class="error-page">
+            <h2 class="headline text-warning">404</h2>
+            <div class="error-content">
+                <h3><i class="fas fa-exclamation-triangle text-warning"></i> Advertencia: Página no encontrada.</h3>
+                <p>
+                    No se encontró la pagina ingresada <strong> </strong>
+                   puedes <a href="{% url 'inicio' %}"> retornar </a> vuelva al inicio e ingrese sus credenciales.
+                </p>
+                <form class="search-form">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Buscar...">
+                        <div class="input-group-append">
+                            <button type="submit" name="submit" class="btn btn-warning"><i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+
+{% endblock Contenido %}

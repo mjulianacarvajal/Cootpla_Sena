@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load customfilter %}
+{% block Contenido %}
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="card card-default rounded-0 shadow">
+        <div class="card-header">
+              <h7>Ingrese los vehículos que operan en la empesa:</h7>
+            <div class="d-flex w-100 align-items-center justify-content-between">
+                <h4 class="card-title fw-bold">Listado de Buses</h4>
+                <div class="tools">
+                    <button type="button" class="btn btn-primary rounded-0 bg-gradient btn-sm" id='adiccion'><i class="fa fa-plus"></i>Adicionar</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <table class="table table-bordered" id="bus-lista">
+
+                    <thead>
+                        <tr class="bg-gradient bg-secondary bg-opacity-50 text-light">
+                            <th class="px-2 py-2 text-center">#</th>
+                            <th class="px-2 py-2 text-center">Fecha de Ingreso</th>
+
+                            <th class="px-2 py-2 text-center">Bus </th>
+                            <th class="px-2 py-2 text-center">Propietario</th>
+                            <th class="px-2 py-2 text-center">Número de Placa</th>
+                            <th class="px-2 py-2 text-center">Asientos</th>
+                            <th class="px-2 py-2 text-center">Estado</th>
+                            <th class="px-2 py-2 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bus in buses %}
+                        <tr>
+                            <td class="px-2 py-1 align-middle">{{ forloop.counter }}</td>
+                            <td class="px-2 py-1 align-middle">{{ bus.fecha_creado|date:"Y-m-d h:i A" }}</td>
+
+                            <td class="px-2 py-1 align-middle">{{ bus }}</td>
+                           <td class="px-2 py-1 align-middle">{{ bus.propietario }}</td>
+
+                            <td class="px-2 py-1 align-middle">{{ bus.placa_bus }}</td>
+                            <td class="px-2 py-1 align-middle">{{ bus.asientos }}</td>
+                            <td class="px-1 py-1 align-middle text-center">
+                                {% if bus.estado == '1' %}
+                                <span class="badge bg-primary bg-gradient rounded-pill px-2">Activo</span> {% else %}
+                                <span class="badge bg-secondary bg-gradient rounded-pill px-2">Inactivo</span> {% endif %}
+                            </td>
+                            <td class="px-2 py-1 align-middle text-center">
+                                <a class="btn btn-outline-primary btn-sm edit-data" href="javascript:void(0)" data-id="{{ bus.pk }}" title="Editar">
+                                    <i class="fa fa-edit"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm delete-data" type="button" data-id="{{ bus.pk }}" title="Eliminar">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock Contenido %} {% block ScriptBlock %}
+<script>
+    $(function() {
+        $('#adiccion').click(function() {
+            uni_modal('<i class="fa fa-plus"></i> Adicionar Bus', '{% url "adm-bus" %}', 'modal-md')
+        })
+        $('.edit-data').click(function() {
+            uni_modal('<i class="fa fa-edit"></i> Editar Bus', '{% url "adm-bus" %}/' + $(this).attr('data-id'), 'modal-md')
+        })
+        $('.delete-data').click(function() {
+            _conf("¿Deseas eliminar este Bus del sistema?", "eliminar_bus", [$(this).attr('data-id')])
+        })
+
+        $('#bus-lista').DataTable({
+            columnDefs: [{
+                orderable: false,
+                targets: 5
+            }],
+            "language": {
+            "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                },
+
+            initComplete: function(settings, json) {
+                $('table td, table th').addClass('px-2 py-1')
+            },
+            drawCallback: function(settings) {
+                $('table td, table th').addClass('px-2 py-1')
+            }
+        })
+    })
+
+    function eliminar_bus($id) {
+        start_loader();
+        var _this = $(this)
+        $('.err-msg').remove();
+        var el = $('<div>')
+        el.addClass("alert alert-danger err-msg")
+        el.hide()
+        $.ajax({
+            url: '{% url "eliminar-bus" %}',
+            headers: {
+                'X-CSRFToken': "{{csrf_token}}"
+            },
+            method: 'POST',
+            data: {
+                id: $id
+            },
+            dataType: 'json',
+            error: err => {
+                console.log(err)
+                el.text('An error occurred.')
+                el.show('slow')
+                end_loader()
+            },
+            success: function(resp) {
+                if (resp.status == 'success') {
+                    location.reload()
+                } else if (!!resp.msg) {
+                    el.text('An error occurred.')
+                    el.show('slow')
+                } else {
+                    el.text('An error occurred.')
+                    el.show('slow')
+                }
+                end_loader()
+            }
+        })
+    }
+</script>
+{% endblock ScriptBlock %}

@@ -1,0 +1,121 @@
+{% load customfilter %}
+{% load humanize %}
+
+<div class="container-fluid">
+     <form action=" " id="encomienda-form">
+     {% csrf_token %}
+        <div class="form-group">
+            <label for="programacion"  id="programacion" class="control-label">Viaje Programado</label>
+            <select name="programacion"  class="form-select select2 rounded-0">
+                    {% if not encomienda.programacion %}  
+                    <option selected></option>
+                    {% else %}
+                    <option ></option>
+                    {% endif %}
+                    {% for programacion in programaciones %}
+                    {% if encomienda.programacion.id == encomienda.id %}
+                    <option value="{{ programacion.id }}" selected>{{ programacion }}</option>
+                    {% else %}
+                    <option value="{{ programacion.id }}" >{{ programacion }}</option>
+                    {% endif %}
+                    {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="nombre_envio"  id="nombre_envio" class="control-label"> Nombre Remitente:</label>
+            <input class="form-control rounded-0" name="nombre_envio" type="text" value="{{ encomienda.nombre_envio}}" required>
+        </div>
+        <div class="form-group">
+            <label for="cedula_envio"  id="cedula_envio" class="control-label">Documento:</label>
+            <input class="form-control rounded-0" name="nombre_envio"  type="number" value="{{ encomienda.cedula_envio}}" required>
+        </div>
+        <div class="form-group">
+            <label for="telefono_envio"  id="telefono_envio" class="control-label">Telefono:</label>
+            <input class="form-control rounded-0" name="telefono_envio" type="number" value="{{ encomienda.telefono_envio}}" required>
+        </div>
+        <div class="form-group">
+            <label for="nombre_recibido"  id="nombre_recibido" class="control-label">Nombre de quién reclama la encomienda:</label>
+            <input class="form-control rounded-0" name="nombre_recibido" type="text" value="{{ encomienda.nombre_recibido}}" required>
+        </div>
+        <div class="form-group">
+            <label for="cedula_recibido"  id="cedula_recibido" class="control-label">Telefono de quién reclama la encomienda:</label>
+            <input class="form-control rounded-0" name="nombre_recibido" type="number" value="{{ encomienda.cedula_recibido}}" required>
+        </div>
+        <div class="form-group">
+            <label for="caracteristicas" class="control-label">Costo de Envio</label>
+            <input type="text" class="form-control rounded-0" id="caracteristicas" name="caracteristicas"  value="{{  encomienda.caracteristicas }}" required>
+        </div>
+{#          FECHA Y CODIGO ASIGNADO#}
+
+        <div class="form-group mb-3 ">
+         <label for="encomienda" class="control-label">:</label>
+            <select name="encomienda" id="encomienda" class="form-select rounded-0">
+                {% if not encomienda.estado or encomienda.estado == '1' %}
+                <option value="1" selected>Programado</option>
+                {% else %}
+                <option value="1">Programado</option>
+                {% endif %}
+                {% if encomienda.estado == '0' %}
+                <option value="2" selected>Entregado</option>
+                {% else %}
+                <option value="2" selected>Entregrado</option>
+                {% endif %}
+            </select>
+        </div>
+    </form>
+</div>
+    <script>
+    $(function() {
+         $('.select2').select2({
+            width:"100%",
+            placeholder: "Por favor seleccione aquí",
+            dropdownParent:$('#uni_modal')
+        })
+
+
+        $('#encomienda-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            start_loader();
+            $.ajax({
+                url: "{% url 'guardar-encomienda' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert("An error occured ", 'error');
+                    end_loader();
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        el.removeClass("alert alert-danger err-msg ")
+                        location.reload()
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.html(resp.msg)
+                    } else {
+                        el.text("An error occured ", 'error');
+                        end_loader();
+                        console.err(resp)
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal ").scrollTop(0);
+                    end_loader()
+                }
+            })
+        })
+    })
+</script>

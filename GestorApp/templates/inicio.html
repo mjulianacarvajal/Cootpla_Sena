@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block Contenido %}
+
+<!--Section: Content-->
+<section class="">
+    {% if user.id %}
+   <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="card rounded-0 shadow border-primary text-start summary-card my-3">
+                <div class="card-body">
+                    <div class="d-flex w-100">
+                        <div class="col-8 pe-2">
+                            <div class="summary-title fs-5 border-bottom">Encomiendas a hoy:</div>
+                            <div class="summary-count text-end fw-bolder mt-3 px-4">{{ encomiendas }}</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="summary-icon p-3 rounded border text-center bg-gradient bg-light">
+                                <i class="fa fa-list fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="card rounded-0 shadow border-warning text-start summary-card my-3">
+                <div class="card-body">
+                    <div class="d-flex w-100">
+                        <div class="col-8 pe-2">
+                            <div class="summary-title fs-5 border-bottom">Total Buses</div>
+                            <div class="summary-count text-end fw-bolder mt-3 px-4">{{ buses }}</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="summary-icon p-3 rounded border text-center bg-gradient bg-light">
+                                <i class="fa fa-bus fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="card rounded-0 shadow border-success text-start summary-card my-3">
+                <div class="card-body">
+                    <div class="d-flex w-100">
+                        <div class="col-8 pe-2">
+                            <div class="summary-title fs-5 border-bottom">Viajes Programados</div>
+                            <div class="summary-count text-end fw-bolder mt-3 px-4">{{ programaciones }}</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="summary-icon p-3 rounded border text-center bg-gradient bg-light">
+                              <i class="fa fa-map-o fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="card rounded-0 shadow border-danger text-start summary-card my-3">
+                <div class="card-body">
+                    <div class="d-flex w-100">
+                        <div class="col-8 pe-2">
+                            <div class="summary-title fs-5 border-bottom">Usuarios</div>
+                            <div class="summary-count text-end fw-bolder mt-3 px-4">{{ username }}</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="summary-icon p-3 rounded border text-center bg-gradient bg-light">
+                                <i class="fa fa-user fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+            <<div class="row justify-content-center justify-content-x-start">
+
+        <div class="col-sm-3">
+
+            <h5>Capacidad por vehiculo</h5>
+            <canvas id="myChart1" width="35" height="55"></canvas>
+            <script>
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+
+                        datasets: [{
+                            data: {{ data|safe}},
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgb(105,114,114)',
+                            ],
+
+                            borderWidth: 1
+
+
+                        }],
+                        labels: {{ labels|safe }}
+                    },
+
+                });
+            </script>
+        </div>
+    </div>
+    </div>
+        </div>
+    <div class="container">
+
+
+    {% else %}
+
+   
+    {% endif %}
+</section>
+
+
+</div> {% endblock Contenido %}
